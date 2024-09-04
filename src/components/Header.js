@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -32,8 +32,23 @@ const socials = [
   },
 ];
 
+const ShowSocial = () => {
+  return (
+    <HStack spacing={4}>
+      {socials.map((social, index) =>(
+          <a key={index} id={`social-${index}`} href={social.url}>
+              <FontAwesomeIcon icon={social.icon} size="2x" />
+          </a>
+        ))}
+    </HStack>
+  );
+};
+
 const Header = () => {
-  const handleClick = (anchor) => () => {
+  const [url , setUrl] = useState("");
+
+  const handleClick = (anchor) => (event) => {
+    event.preventDefault();
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
     if (element) {
@@ -42,8 +57,9 @@ const Header = () => {
         block: "start",
       });
     }
+    setUrl(`#${anchor}-section`)
   };
-
+  
   return (
     <Box
       position="fixed"
@@ -64,11 +80,12 @@ const Header = () => {
           alignItems="center"
         >
           <nav>
-            {/* Add social media links based on the `socials` data */}
+            <ShowSocial/>
           </nav>
           <nav>
             <HStack spacing={8}>
-              {/* Add links to Projects and Contact me section */}
+              <a onClick={handleClick("projects")} href={url}>Project</a>
+              <a onClick={handleClick("contactme")} href={url} >Contact Me</a>
             </HStack>
           </nav>
         </HStack>
