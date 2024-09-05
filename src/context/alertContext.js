@@ -1,23 +1,34 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useState, useEffect} from "react";
 
-const AlertContext = createContext(undefined);
+const AlertContext = createContext();
 
 export const AlertProvider = ({ children }) => {
-  const [state, setState] = useState({
-    isOpen: false,
-    // Type can be either "success" or "error"
-    type: 'success',
-    // Message to be displayed, can be any string
-    message: '',
-  });
+  const [alert, setAlert] = useState({ isOpen: false, message: "", type: "" });
+
+
+  const onOpen = (type, message) => {
+    setAlert({ isOpen: true, message, type });
+  };
+
+  const onClose = () => {
+    setAlert({ isOpen: false, message: "", type: "" });
+  };
+
+  // Usamos useEffect para que el temporizador solo se ejecute cuando la alerta esté abierta
+  useEffect(() => {
+    let timer;
+    if (alert.isOpen) {
+      timer = setTimeout(() => {
+        onClose();
+      }, 3000); // Cerrar después de 3 segundos
+    }
+    return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta o se vuelve a renderizar
+  }, [alert.isOpen]);
+
 
   return (
     <AlertContext.Provider
-      value={{
-        ...state,
-        onOpen: (type, message) => setState({ isOpen: true, type, message }),
-        onClose: () => setState({ isOpen: false, type: '', message: '' }),
-      }}
+    value={{ alert, onOpen, onClose }}
     >
       {children}
     </AlertContext.Provider>
